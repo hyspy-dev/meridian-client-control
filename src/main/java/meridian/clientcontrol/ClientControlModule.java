@@ -12,6 +12,7 @@ import meridian.protocol.EntityStatUpdate;
 import meridian.protocol.EntityStatsUpdate;
 import meridian.protocol.EntityUpdate;
 import meridian.protocol.GameMode;
+import meridian.protocol.FlyMode;
 import meridian.protocol.MovementSettings;
 import meridian.protocol.packets.entities.EntityUpdates;
 import meridian.protocol.packets.interface_.CustomPage;
@@ -31,10 +32,11 @@ import org.slf4j.Logger;
  *       then forge a {@code SetGameMode} <i>to the client</i> and hold it by
  *       rewriting any later server {@code SetGameMode}. Disabling sends the
  *       server's real mode back.</li>
- *   <li><b>Fly</b> — the fly capability is {@code MovementSettings.canFly}, sent to
+ *   <li><b>Fly</b> — the fly capability is {@code MovementSettings.fly}, sent to
  *       the client in {@code UpdateMovementSettings} (id 110). When on, the module
- *       forces {@code canFly = true} (immediately and on every later server update,
- *       which would otherwise undo a one-shot); off restores the server's value.</li>
+ *       lifts a {@code Disabled} to {@code Allowed} (immediately and on every later
+ *       server update, which would otherwise undo a one-shot); off restores the
+ *       server's value.</li>
  *   <li><b>Drop isFlying</b> — clears the {@code flying} flag from every C2S
  *       movement packet ({@code ClientMovement} / {@code MountMovement}) so the
  *       server never sees the player as flying. This is the only C2S leg.</li>
@@ -102,7 +104,7 @@ public class ClientControlModule implements ProxyModule {
         ctx.registerSettings(SettingsSpec.builder()
                 .bool("gamemode", "Override game mode", false, this::setGamemodeEnabled)
                 .enum_("mode", "Mode", Mode.class, Mode.Creative, this::setMode)
-                .bool("fly", "Fly (force canFly)", false, this::setFly)
+                .bool("fly", "Fly (allow flight)", false, this::setFly)
                 .bool("stripFlying", "Drop isFlying from C2S movement", false,
                         v -> stripFlying = v)
                 .bool("addSwimming", "Add isSwimming to C2S movement", false,
@@ -189,9 +191,11 @@ public class ClientControlModule implements ProxyModule {
             return;   // applied on the next server UpdateMovementSettings instead
         }
         MovementSettings copy = new MovementSettings(base);
-        copy.canFly = on || base.canFly;   // off = restore the server's real value
+        // off = restore the server's real value; on only lifts an outright ban, so a
+        // server that already forces flight keeps forcing it.
+        copy.fly = on && base.fly == FlyMode.Disabled ? FlyMode.Allowed : base.fly;
         s.sendToClient(new UpdateMovementSettings(copy));   // -> client
-        log.info("client-control: fly {} (canFly={})", on ? "ON" : "OFF", copy.canFly);
+        log.info("client-control: fly {} (mode={})", on ? "ON" : "OFF", copy.fly);
     }
 
     // ------------------------------------------------------------------

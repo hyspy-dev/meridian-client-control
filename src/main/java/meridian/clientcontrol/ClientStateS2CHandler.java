@@ -10,6 +10,7 @@ import meridian.protocol.EntityStatType;
 import meridian.protocol.EntityStatUpdate;
 import meridian.protocol.EntityStatsUpdate;
 import meridian.protocol.GameMode;
+import meridian.protocol.FlyMode;
 import meridian.protocol.MovementSettings;
 import meridian.protocol.EntityUpdate;
 import meridian.protocol.packets.assets.UpdateEntityStatTypes;
@@ -29,7 +30,7 @@ import meridian.protocol.packets.player.UpdateMovementSettings;
  *       override is engaged, rewrites it to the forced mode so the server can't
  *       revert the spoof.</li>
  *   <li>{@code UpdateMovementSettings} — snapshots the server's real settings, then
- *       forces {@code canFly = true} while Fly is on.</li>
+ *       lifts {@code fly} out of {@code Disabled} while Fly is on.</li>
  * </ul>
  *
  * <p>Both packets live on the <b>Default</b> channel, so the {@link ProxySession}
@@ -63,8 +64,8 @@ final class ClientStateS2CHandler implements PacketHandler {
             module.captureSession(session);               // Default stream
             MovementSettings settings = ums.movementSettings;
             module.rememberServerSettings(settings);
-            if (module.flyForced() && !settings.canFly) {
-                settings.canFly = true;
+            if (module.flyForced() && settings.fly == FlyMode.Disabled) {
+                settings.fly = FlyMode.Allowed;
                 return Action.MODIFIED;
             }
             return Action.FORWARD;
