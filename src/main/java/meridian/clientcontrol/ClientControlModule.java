@@ -12,7 +12,6 @@ import meridian.protocol.EntityStatUpdate;
 import meridian.protocol.EntityStatsUpdate;
 import meridian.protocol.EntityUpdate;
 import meridian.protocol.GameMode;
-import meridian.protocol.FlyMode;
 import meridian.protocol.MovementSettings;
 import meridian.protocol.packets.entities.EntityUpdates;
 import meridian.protocol.packets.interface_.CustomPage;
@@ -191,11 +190,10 @@ public class ClientControlModule implements ProxyModule {
             return;   // applied on the next server UpdateMovementSettings instead
         }
         MovementSettings copy = new MovementSettings(base);
-        // off = restore the server's real value; on only lifts an outright ban, so a
-        // server that already forces flight keeps forcing it.
-        copy.fly = on && base.fly == FlyMode.Disabled ? FlyMode.Allowed : base.fly;
+        // 0.5.9: MovementSettings has no fly field (added in 0.6), so fly-control is inert here —
+        // we forward the server's settings unchanged.
         s.sendToClient(new UpdateMovementSettings(copy));   // -> client
-        log.info("client-control: fly {} (mode={})", on ? "ON" : "OFF", copy.fly);
+        log.info("client-control: fly {} (not supported on this protocol)", on ? "ON" : "OFF");
     }
 
     // ------------------------------------------------------------------

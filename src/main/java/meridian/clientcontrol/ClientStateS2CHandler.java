@@ -10,7 +10,6 @@ import meridian.protocol.EntityStatType;
 import meridian.protocol.EntityStatUpdate;
 import meridian.protocol.EntityStatsUpdate;
 import meridian.protocol.GameMode;
-import meridian.protocol.FlyMode;
 import meridian.protocol.MovementSettings;
 import meridian.protocol.EntityUpdate;
 import meridian.protocol.packets.assets.UpdateEntityStatTypes;
@@ -64,10 +63,7 @@ final class ClientStateS2CHandler implements PacketHandler {
             module.captureSession(session);               // Default stream
             MovementSettings settings = ums.movementSettings;
             module.rememberServerSettings(settings);
-            if (module.flyForced() && settings.fly == FlyMode.Disabled) {
-                settings.fly = FlyMode.Allowed;
-                return Action.MODIFIED;
-            }
+            // 0.5.9: no MovementSettings.fly field to force (added in 0.6) — forward as-is.
             return Action.FORWARD;
         }
 
