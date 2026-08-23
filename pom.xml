@@ -14,6 +14,7 @@
            - the outgoing "flying" movement flag  (C2S ClientMovement / MountMovement)
          No meridian-core dependency: everything is driven straight off the wire. -->
     <properties>
+        <meridian.protocol.version>245610536</meridian.protocol.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -31,7 +32,7 @@
         <dependency>
             <groupId>meridian</groupId>
             <artifactId>meridian-protocol</artifactId>
-            <version>245610536</version>
+            <version>${meridian.protocol.version}</version>
             <scope>provided</scope>
         </dependency>
         <!-- PacketHandler's methods carry a Netty ChannelHandlerContext. -->
