@@ -1,6 +1,6 @@
 {
   "name": "Meridian Client Control",
-  "version": "0.1.0",
+  "version": "${project.version}",
   "main": "meridian.clientcontrol.ClientControlModule",
   "priority": 100,
   "updateUrl": "https://github.com/hyspy-dev/meridian-client-control/releases",
