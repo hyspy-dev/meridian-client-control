@@ -14,7 +14,7 @@
            - the outgoing "flying" movement flag  (C2S ClientMovement / MountMovement)
          No meridian-core dependency: everything is driven straight off the wire. -->
     <properties>
-        <meridian.protocol.version>245610536</meridian.protocol.version>
+        <meridian.protocol.version>3871693122</meridian.protocol.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
