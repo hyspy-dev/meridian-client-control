@@ -6,6 +6,7 @@ import meridian.api.packet.Direction;
 import meridian.api.packet.HandlerPosition;
 import meridian.api.session.ProxySession;
 import meridian.api.settings.SettingsSpec;
+import meridian.core.api.NoClip;
 import meridian.protocol.ComponentUpdate;
 import meridian.protocol.EntityStatOp;
 import meridian.protocol.EntityStatUpdate;
@@ -96,6 +97,11 @@ public class ClientControlModule implements ProxyModule {
     public void onEnable(ModuleContext ctx) {
         this.log = ctx.getLogger();
 
+        // No-clip lives in core (it forges the client's own no-clip switch); this is a second
+        // toggle for the same thing, here beside the other client cheats. Optional: on a line
+        // whose core does not carry the switch it is simply not provided, and the toggle says so.
+        NoClip noClip = ctx.services().get(NoClip.class).orElse(null);
+
         ctx.registerHandler(Direction.S2C, HandlerPosition.NORMAL,
                 (direction, session) -> new ClientStateS2CHandler(this));
         ctx.registerHandler(Direction.C2S, HandlerPosition.NORMAL,
@@ -113,6 +119,16 @@ public class ClientControlModule implements ProxyModule {
                 .bool("freezeStamina", "Freeze stamina (always full)", false,
                         v -> freezeStamina = v)
                 .bool("deathIgnore", "Death ignore", false, this::setDeathIgnore)
+                .bool("noclip", noClip != null
+                                ? "No-clip (client-side; server still collides)"
+                                : "No-clip (needs a 0.6+ server)",
+                        false, on -> {
+                            if (noClip != null) {
+                                noClip.setEnabled(on);
+                            } else {
+                                log.warn("no-clip is not available on this server line");
+                            }
+                        })
                 .liveText("Status", this::status)
                 .build());
 

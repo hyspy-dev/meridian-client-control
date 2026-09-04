@@ -12,7 +12,9 @@
            - the client-perceived game mode  (S2C SetGameMode)
            - the fly capability  (S2C UpdateMovementSettings.canFly)
            - the outgoing "flying" movement flag  (C2S ClientMovement / MountMovement)
-         No meridian-core dependency: everything is driven straight off the wire. -->
+         It also consumes one optional core service - NoClip - so its no-clip toggle drives the
+         same client-side no-clip core owns. Optional: asked for with get(), gated off when a
+         line's core does not provide it (0.6+ only). Everything else is straight off the wire. -->
     <properties>
         <meridian.protocol.version>3871693122</meridian.protocol.version>
         <maven.compiler.source>21</maven.compiler.source>
@@ -25,6 +27,14 @@
             <groupId>meridian</groupId>
             <artifactId>meridian-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- The NoClip service interface. Protocol-free, present on every line; the toggle is
+             gated at runtime on whether core actually provides it. -->
+        <dependency>
+            <groupId>meridian</groupId>
+            <artifactId>meridian-core-api</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- Layer-1 opt-in: SetGameMode / UpdateMovementSettings / ClientMovement /
