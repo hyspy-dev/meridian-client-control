@@ -130,6 +130,7 @@ public class ClientControlModule implements ProxyModule {
                             }
                         })
                 .liveText("Status", this::status)
+                .persistent("fly", "stripFlying", "addSwimming", "noFall", "freezeStamina", "deathIgnore", "noclip")
                 .build());
 
         log.info("meridian-client-control enabled — gamemode / fly / isFlying-strip / nofall / stamina");
