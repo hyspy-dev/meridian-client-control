@@ -16,7 +16,7 @@
          same client-side no-clip core owns. Optional: asked for with get(), gated off when a
          line's core does not provide it (0.6+ only). Everything else is straight off the wire. -->
     <properties>
-        <meridian.protocol.version>2982205573</meridian.protocol.version>
+        <meridian.protocol.version>3908406161</meridian.protocol.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
