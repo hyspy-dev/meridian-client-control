@@ -4,9 +4,10 @@
   "main": "meridian.clientcontrol.ClientControlModule",
   "priority": 100,
   "updateUrl": "https://github.com/hyspy-dev/meridian-client-control/releases",
+  "dependsOn": {
+    "meridian-core": ">=0.2.0"
+  },
   "requires": {
-    "packets": ["SetGameMode", "UpdateMovementSettings", "ClientMovement", "MountMovement",
-                "UpdateEntityStatTypes", "EntityUpdates",
-                "SetClientId", "CustomPage", "PlayAnimation"]
+    "services": ["meridian.core.api.ClientSpoof"]
   }
 }

@@ -7,16 +7,14 @@
     <artifactId>meridian-client-control</artifactId>
     <version>0.1.0-SNAPSHOT</version>
 
-    <!-- Client Control: a Layer-1 (raw-packet) module. It spoofs three things the
-         client believes about itself, all on the Default channel:
-           - the client-perceived game mode  (S2C SetGameMode)
-           - the fly capability  (S2C UpdateMovementSettings.canFly)
-           - the outgoing "flying" movement flag  (C2S ClientMovement / MountMovement)
-         It also consumes one optional core service - NoClip - so its no-clip toggle drives the
-         same client-side no-clip core owns. Optional: asked for with get(), gated off when a
-         line's core does not provide it (0.6+ only). Everything else is straight off the wire. -->
+    <!-- Client Control: a Layer-2 module. Switches for what the client believes about itself
+         (game mode, flight, stamina, death) and what the server is told of its movement (the
+         flying / swimming flags, the fall speed) - every one a setting of core's ClientSpoof,
+         which applies it inside core's own rewriters after core has read the truth. And a second
+         toggle for core's NoClip (optional: get(), gated off where a line's core lacks it).
+         It talks only to meridian-api + meridian-core-api - no meridian-protocol, no raw
+         packets. -->
     <properties>
-        <meridian.protocol.version>2583978903</meridian.protocol.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -29,27 +27,11 @@
             <version>1.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <!-- The NoClip service interface. Protocol-free, present on every line; the toggle is
-             gated at runtime on whether core actually provides it. -->
+        <!-- ClientSpoof and NoClip: core's services, protocol-free. -->
         <dependency>
             <groupId>meridian</groupId>
             <artifactId>meridian-core-api</artifactId>
             <version>0.1.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- Layer-1 opt-in: SetGameMode / UpdateMovementSettings / ClientMovement /
-             MountMovement and the MovementStates / MovementSettings structs. -->
-        <dependency>
-            <groupId>meridian</groupId>
-            <artifactId>meridian-protocol</artifactId>
-            <version>${meridian.protocol.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- PacketHandler's methods carry a Netty ChannelHandlerContext. -->
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>4.1.100.Final</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -91,6 +73,29 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Layer-2 guard: this module must not (accidentally) depend on meridian-protocol. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.4.1</version>
+                <executions>
+                    <execution>
+                        <id>layer2-no-protocol</id>
+                        <goals><goal>enforce</goal></goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>meridian:meridian-protocol</exclude>
+                                    </excludes>
+                                    <message>Layer-2 module must not depend on meridian-protocol (directly or transitively). If it genuinely needs raw packets it is Layer 1 — mark it "layer": 1 in module.json and drop this guard.</message>
+                                </bannedDependencies>
+                            </rules>
+                            <fail>true</fail>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
