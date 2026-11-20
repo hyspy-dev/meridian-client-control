@@ -17,7 +17,7 @@ import org.slf4j.Logger;
  *       against every later change the server sends; disabling gives it the server's own back.</li>
  *   <li><b>Fly</b> — lets the client fly where the server has flight disabled; off restores the
  *       server's movement settings.</li>
- *   <li><b>Drop isFlying / add isSwimming / NoFall</b> — the flags and the fall speed in the
+ *   <li><b>Drop isFlying / swimming in place of flying / NoFall</b> — the flags and the fall speed in the
  *       movement the client sends the server.</li>
  *   <li><b>Freeze stamina / death ignore</b> — the bars and the death window the client is shown.
  *       Core's own player state keeps the server's values.</li>
@@ -58,7 +58,7 @@ public class ClientControlModule implements ProxyModule {
                 .enum_("mode", "Mode", Mode.class, Mode.Creative, this::setMode)
                 .bool("fly", "Fly (allow flight)", false, spoof::setFlight)
                 .bool("stripFlying", "Drop isFlying from C2S movement", false, spoof::setDropFlying)
-                .bool("addSwimming", "Add isSwimming to C2S movement", false, spoof::setAddSwimming)
+                .bool("addSwimming", "Swimming in place of flying (C2S)", false, spoof::setAddSwimming)
                 .bool("noFall", "NoFall (no fall damage)", false, spoof::setNoFall)
                 .bool("freezeStamina", "Freeze stamina (always full)", false, spoof::setFullStamina)
                 .bool("deathIgnore", "Death ignore", false, spoof::setIgnoreDeath)
